@@ -1,5 +1,6 @@
 from cmu_graphics import *
-#chat gpt helped with this one 
+#chat gpt helped make the equations and make sure i called the correct keys for
+#both functions
 def calcShearMoment(app):
     if app.rodLeng == None or len(app.supports) < 2:
          return [], []

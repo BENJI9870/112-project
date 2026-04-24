@@ -1,3 +1,24 @@
+'''
+This code is meant to allow you to put in different loads and determine the shear force
+and moment from just two supports.
+key features:
+1. pressing buttons and color changing
+2. text boxes working well
+3. when you click add or save, if it is an accepted value it will show up on the diagram
+4. moment and shear graphs/calculations
+5. auto complete for quick testing
+6. clear functionality 
+
+'''
+
+
+
+
+
+
+
+
+
 from button import Button, textBox
 from init_textboxes import initializeTextBoxes
 from init_buttons import initializeRodButtons, initializeSupportButtons, initializePointLoadButtons, initializeOtherButtons, initializeAuto, initializeDistLoadButtons
@@ -81,7 +102,7 @@ def drawSupports(app):
             drawCircle(cx, cy-5, r * 0.75, fill='pink')
 
 
-
+#chat gpt helped make the arrows
 def drawPointLoads(app):
     for load in app.pointLoads:
         d = -1 if load['direction'] == 'up' else 1
@@ -96,7 +117,7 @@ def drawPointLoads(app):
 
         # label
         drawLabel(str(load['magnitude']), cx, tipY - 60*d, size=15)
-#ChatGPT helped with this one
+#ChatGPT helped make the arrows
 def drawDistLoads(app):
     for load in app.distLoads:
         d = -1 if load['direction'] == 'up' else 1
