@@ -35,13 +35,12 @@ def calcShearMoment(app):
 
          totalForce = (w1 + w2) / 2 * (x2 - x1)
 
-    if w1 + w2 == 0:
-        centroid = (x1 + x2) / 2
-    else:
-        centroid = x1 + (x2 - x1) * (w1 + 2*w2) / (3*(w1 + w2))
-
-    loadSum += totalForce
-    loadSumDist += totalForce * (centroid - xA)
+         if w1 + w2 == 0:
+              centroid = (x1 + x2) / 2
+         else:
+              centroid = x1 + (x2 - x1) * (w1 + 2*w2) / (3*(w1 + w2))
+         loadSum += totalForce
+         loadSumDist += totalForce * (centroid - xA)
 
     reactB = -loadSumDist / (xB - xA)
     reactA = -loadSum - reactB
