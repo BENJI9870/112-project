@@ -169,10 +169,15 @@ def initializeDistLoadButtons(app):
 def initializeAuto(app):
     def autoAdd():
         clearAll(app)
+
         supportOptions = ['pinned', 'roller']
         loadDirOptions = ['up', 'down']
 
         app.rodLeng = random.randint(2,100)
+        #changing values of text box for length
+        app.textBoxes[0].text = str(app.rodLeng)
+        app.textBoxes[0].isDefaultText = False
+
         supportType1 = supportOptions[random.randint(0,1)]
         supportType2 = supportOptions[random.randint(0,1)]
         supportLoc1, supportLoc2 = random.sample(range(0,app.rodLeng), 2)

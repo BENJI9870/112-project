@@ -49,7 +49,7 @@ def calcShearMoment(app):
     momentPoints = []
     steps = 100
 
-    for i in range(steps):
+    for i in range(steps+1):
          x = L * i / steps
 
          V = 0
