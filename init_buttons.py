@@ -1,14 +1,34 @@
 from button import Button
 from shear_moment import plotShearMoment
+import random
 buttonWidth = 50
 buttonHeight = 50
 
+def distConvert(app, og1):
+    beamLeft = app.width*5/8 - app.width/4
+    beamWidth = app.width/2
+    x1 = beamLeft + (og1 / app.rodLeng) * beamWidth
+    return x1
+def clearAll(app):
+    app.rodLeng = None
+    app.selectedSupport = None
+    app.selectedPointLoadDir = None
+    app.selectedDistLoadDir = None
+    app.supports = []
+    app.pointLoads = []
+    app.distLoads = []
+    for box in app.textBoxes:
+        box.text = box.defaultText
+        box.isDefaultText = True
 
 def initializeRodButtons(app):
     buttonLeft = app.sidePanelWidth - app.sideMargin - buttonWidth
 
     def rodLengAdd():
-        app.rodLeng = app.textBoxes[0].getValue()
+        rodLeng = app.textBoxes[0].getValue()
+        if rodLeng <2:
+            return
+        app.rodLeng = rodLeng
 
     box = app.textBoxes[0]
     rodLeng = Button(buttonLeft, box.top, buttonWidth, buttonHeight, 'lightBlue', 'Save', 12, rodLengAdd)
@@ -30,7 +50,7 @@ def initializeSupportButtons(app):
 
     def addSupport():
         supportLoc = app.textBoxes[1].getValue()
-        if app.selectedSupport == None or app.rodLeng == None or supportLoc == None:
+        if app.selectedSupport == None or app.rodLeng == None or supportLoc == None or len(app.supports) >= 2:
             return
         if supportLoc > app.rodLeng:
             return
@@ -119,11 +139,8 @@ def initializeDistLoadButtons(app):
             return
         if startLoc >= endLoc:
             return
-        beamLeft = app.width*5/8 - app.width/4
-        beamWidth = app.width/2
-
-        startX = beamLeft + (startLoc / app.rodLeng) * beamWidth
-        endX = beamLeft + (endLoc / app.rodLeng) * beamWidth
+        startX= distConvert(app, startLoc)
+        endX = distConvert(app, endLoc)
 
         app.distLoads.append({
             'start location': startX,
@@ -151,36 +168,50 @@ def initializeDistLoadButtons(app):
 
 def initializeAuto(app):
     def autoAdd():
-        app.rodLeng = 5
-        app.selectedSupport = 'pinned'
-        app.selectedPointLoadDir = 'up'
-        app.selectedDistLoadDir = 'down'
-        beamLeft = app.width*5/8 - app.width/4
-        beamWidth = app.width/2
-        x1 = beamLeft + (5 / app.rodLeng) * beamWidth
-        x2 = beamLeft
-        app.supports = [{'location': x1, 'Beam Location': 5, 'type': 'pinned'}, 
-                        {'location': x2, 'Beam Location': 0, 'type': 'pinned'}]
-        beamLeft = app.width*5/8 - app.width/4
-        beamWidth = app.width/2
-        x1 = beamLeft + (4 / app.rodLeng) * beamWidth
-        x2 = beamLeft + (2 / app.rodLeng) * beamWidth
+        clearAll(app)
+        supportOptions = ['pinned', 'roller']
+        loadDirOptions = ['up', 'down']
 
-        app.pointLoads = [{'location': x1, 'magnitude': 500, 'Beam Location': 4,'direction': 'up'},
-                          {'location': x2, 'magnitude': 250, 'Beam Location': 2,'direction': 'down'}]
+        app.rodLeng = random.randint(2,100)
+        supportType1 = supportOptions[random.randint(0,1)]
+        supportType2 = supportOptions[random.randint(0,1)]
+        supportLoc1, supportLoc2 = random.sample(range(0,app.rodLeng), 2)
+        app.selectedSupport = supportType2
+        app.selectedPointLoadDir = loadDirOptions[random.randint(0,1)]
+        app.selectedDistLoadDir = loadDirOptions[random.randint(0,1)]
+
+        x1, x2 = distConvert(app, supportLoc1), distConvert(app, supportLoc2)
+        app.supports = [{'location': x1, 'Beam Location': supportLoc1, 'type': supportType1}, 
+                        {'location': x2, 'Beam Location': supportLoc2, 'type': supportType2}]
         
-        startX = beamLeft + (0 / app.rodLeng) * beamWidth
-        endX = beamLeft + (3 / app.rodLeng) * beamWidth
+        numPointLoads = random.randint(1,20)
+        for i in range(numPointLoads):
+            pointLoc = random.randint(0,app.rodLeng)
+            x = distConvert(app, pointLoc)
+            magnitude = random.randint(1,1000)
+            direction = loadDirOptions[random.randint(0,1)]
+            app.pointLoads.append({'location': x, 
+                                   'magnitude': magnitude, 
+                                   'Beam Location': pointLoc, 
+                                   'direction': direction})
+            
 
-        app.distLoads = [{
-            'start location': startX,
-            'end location': endX,
-            'Start Beam': 0,
-            'End Beam': 3,
-            'start load': 0,
-            'end load': 100,
-            'direction': app.selectedDistLoadDir
-        }]
+        numDistLoads = random.randint(1,5)
+        for i in range(numDistLoads):
+            startLoc, endLoc = random.sample(range(0,app.rodLeng), 2)
+            startX = distConvert(app, startLoc)
+            endX = distConvert(app, endLoc)
+            startLoad, endLoad = sorted(random.sample(range(0,1000),2))
+            direction = loadDirOptions[random.randint(0,1)]
+            app.distLoads.append({
+                'start location': startX,
+                'end location': endX,
+                'Start Beam': startLoc,
+                'End Beam': endLoc,
+                'start load': startLoad,
+                'end load': endLoad,
+                'direction': direction
+            })
 
     auto = Button(app.width - 100, 100, 50, 50, 'blue', 'Auto', 12, autoAdd)
     app.buttons += [auto]
@@ -188,16 +219,7 @@ def initializeAuto(app):
 
 def initializeOtherButtons(app):
     def makeClear():
-        app.rodLeng = None
-        app.selectedSupport = None
-        app.selectedPointLoadDir = None
-        app.selectedDistLoadDir = None
-        app.supports = []
-        app.pointLoads = []
-        app.distLoads = []
-        for box in app.textBoxes:
-            box.text = box.defaultText
-            box.isDefaultText = True
+        clearAll(app)
     clear = Button(app.width-100, 50, 50, 50, 'red','Clear', 15, makeClear)
     app.buttons+=[clear]
 

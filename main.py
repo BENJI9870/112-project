@@ -216,6 +216,7 @@ def redrawAll(app):
     drawPointLoads(app)
     plotGraphs(app)
     drawDistLoads(app)
+    print(app.supports)
     
     # title
     drawLabel('Shear And Moment Graphing Calculator',
